@@ -1,7 +1,17 @@
 // sum.test.js
 import { describe, expect, test } from 'vitest';
 
-import { superType } from './SuperType';
+import { isSuperEnum, superType } from './SuperType';
+
+describe('isSuperEnum', () => {
+  test('Receives a known type', () => {
+    expect(isSuperEnum('array')).toBeTruthy();
+  });
+
+  test('Receives an unknown type', () => {
+    expect(isSuperEnum('unknown type')).toBeFalsy();
+  });
+});
 
 describe('superType', () => {
   test('Identifies an Array', () => {
@@ -9,13 +19,13 @@ describe('superType', () => {
     expect(superType(dummy)).toBe('array');
   });
 
-  test('Identifies a GigInt', () => {
+  test('Identifies a BigInt', () => {
     const dummy = BigInt(9007199254740991);
     expect(superType(dummy)).toBe('bigint');
   });
 
   test('Identifies a Boolean', () => {
-    const dummy = false;
+    const dummy = new Boolean(false);
     expect(superType(dummy)).toBe('boolean');
   });
 
@@ -24,14 +34,18 @@ describe('superType', () => {
     expect(superType(dummy)).toBe('date');
   });
 
-  test('Identifies an error', () => {
+  test('Identifies an Error', () => {
     const dummy = new Error();
     expect(superType(dummy)).toBe('error');
   });
 
   test('Identifies a Function', () => {
-    const dummy = () => {};
+    const dummy = new Function();
     expect(superType(dummy)).toBe('function');
+  });
+
+  test('Identifies JSON (as an intrinsic object)', () => {
+    expect(superType(JSON)).toBe('json');
   });
 
   test('Identifies a Map', () => {
@@ -45,7 +59,7 @@ describe('superType', () => {
   });
 
   test('Identifies a Number', () => {
-    const dummy = 123456789;
+    const dummy = new Number(123456789);
     expect(superType(dummy)).toBe('number');
   });
 
@@ -58,36 +72,73 @@ describe('superType', () => {
     const dummy = new Promise((resolve) => {
       resolve('Lorem Ipsum');
     });
-
     expect(superType(dummy)).toBe('promise');
   });
 
   test('Identifies a RegExp', () => {
     const dummy = new RegExp(/^\w+/);
-
     expect(superType(dummy)).toBe('regexp');
   });
 
-  test('Identifies a RegExp', () => {
+  test('Identifies a Set', () => {
     const dummy = new Set();
-
     expect(superType(dummy)).toBe('set');
   });
 
   test('Identifies a String', () => {
-    const dummy = 'Lorem Ipsum';
+    const dummy = new String('Lorem Ipsum');
     expect(superType(dummy)).toBe('string');
   });
 
   test('Identifies a Symbol', () => {
     const dummy = Symbol('id');
-
     expect(superType(dummy)).toBe('symbol');
   });
 
   test('Identifies undefined', () => {
     const dummy = undefined;
-
     expect(superType(dummy)).toBe('undefined');
+  });
+
+  // Tests for Edge Cases
+
+  test('Edge case: Identifies Class as a function. Similar to typeof', () => {
+    class Dog {
+      constructor(public name: string) {}
+    }
+    expect(superType(Dog)).toBe('function');
+  });
+
+  test('Edge case: Identifies instance of a Class as object. Similar to typeof', () => {
+    class Dog {
+      constructor(public name: string) {}
+    }
+    const dummy = new Dog('Dorice');
+    expect(superType(dummy)).toBe('object');
+  });
+
+  test('Edge case: Identifies Proxy as an object', () => {
+    const obj = {};
+    const handler = { get: () => null };
+    const dummy = new Proxy(obj, handler);
+    expect(superType(dummy)).toBe('object');
+  });
+
+  test('Edge case. Identifies TypeError as an error', () => {
+    const dummy = new TypeError('dummy');
+
+    expect(superType(dummy)).toBe('error');
+  });
+
+  test('Edge case...', () => {
+    const dummy = new ArrayBuffer(1000);
+
+    expect(superType(dummy)).toBe('arraybuffer');
+  });
+
+  test('Edge case...', () => {
+    const dummy = Atomics;
+
+    expect(superType(dummy)).toBe('atomics');
   });
 });

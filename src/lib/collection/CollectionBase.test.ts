@@ -28,10 +28,26 @@ describe('CollectionScope', () => {
     expect(collection.count).toBe(2);
   });
 
-  test('Scopes items by field', () => {
+  test('Scopes items by field (string)', () => {
     const collection = new CollectionBase(dummyItems);
+    const expected = [dummyItems.at(0)];
 
-    expect(collection.field_equals('name', 'Anthony').items).toStrictEqual(dummyItems.splice(0, 1));
+    expect(collection.field_equals('name', 'Anthony').items).toStrictEqual(expected);
+  });
+
+  test('Scopes items by field (number)', () => {
+    const collection = new CollectionBase(dummyItems);
+    const expected = [dummyItems.at(0)];
+
+    expect(collection.field_equals('age', 20).items).toStrictEqual(expected);
+  });
+
+  test('Scopes items by field (date)', () => {
+    const date = new Date('1995-01-01');
+    const collection = new CollectionBase(dummyItems);
+    const expected = [dummyItems.at(1)];
+
+    expect(collection.field_equals('birthday', date).items).toStrictEqual(expected);
   });
 
   test('Sorts by string ASC and DESC', () => {
@@ -62,5 +78,48 @@ describe('CollectionScope', () => {
     collection.reset();
 
     expect(collection.items).toStrictEqual(dummyItems);
+  });
+
+  test('Scopes items using a Scope Chain (single link as string)', () => {
+    const collection = new CollectionBase(dummyItems);
+
+    collection.scope('field_equals(name, Anthony)');
+
+    const expected = [dummyItems.at(0)];
+    expect(collection.items).toStrictEqual(expected);
+  });
+
+  test('Scopes items using a Scope Chain (single link as number)', () => {
+    const collection = new CollectionBase(dummyItems);
+
+    collection.scope('field_equals(id, 1)');
+
+    const expected = [dummyItems.at(0)];
+    expect(collection.items).toStrictEqual(expected);
+  });
+
+  test('Scopes items using a Scope Chain (single link as date)', () => {
+    const collection = new CollectionBase(dummyItems);
+
+    const target = new Date('1995-01-01');
+    collection.scope(`field_equals(birthday, ${target})`);
+
+    const expected = [dummyItems.at(1)];
+    expect(collection.items).toStrictEqual(expected);
+  });
+
+  test('Scopes items using a Scope Chain (multiple link)', () => {
+    const collection = new CollectionBase(dummyItems);
+
+    collection.scope('field_equals(name, Anthony)|field_equals(id, 1)');
+
+    const expected = [dummyItems.at(0)];
+    expect(collection.items).toStrictEqual(expected);
+  });
+
+  test('Throws an error if a Scope Chain link does not match a function', () => {
+    const collection = new CollectionBase(dummyItems);
+
+    expect(() => collection.scope('field_equals(graduation, 2008')).toThrowError();
   });
 });
