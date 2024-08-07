@@ -1,3 +1,4 @@
+// Constraints the allowed type of Ticket
 export type TicketType = 'Incident' | 'Support';
 
 export type Ticket = {
@@ -5,4 +6,7 @@ export type Ticket = {
   name: string;
   type: TicketType;
   date: Date;
+  prioritary: Boolean;
+  department: string | null;
+  company?: string;
 };
