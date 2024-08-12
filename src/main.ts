@@ -1,5 +1,5 @@
-import { TicketCollection } from './collections/Tickets';
-import type { Ticket } from './models/Ticket';
+import { TicketCollection } from './demo/collections/Tickets';
+import type { Ticket } from './demo/models/Ticket';
 // import { createTicketProxy } from './proxies/TicketProxy';
 
 const items: Ticket[] = [
@@ -46,7 +46,7 @@ collection.scope('by_type(Incident)');
 console.log(collection.items);
 collection.reset();
 
-// Not params produce an error
+// TODO: Test if no params produce an error
 collection.scope('by_type(Incident)|by_name(Broken link)');
 console.log(collection.items);
 collection.reset();

@@ -1,7 +1,7 @@
-// sum.test.js
 import { describe, expect, test } from 'vitest';
 
-import { fieldGuard, nullGuard, typeofGuard, undefinedGuard } from '@/lib/collection/CollectionGuards';
+import { fieldGuard, nullGuard, typeofGuard, undefinedGuard } from '@/lib/CollectableTypes/CollectionGuards';
+import { TypeEnum } from '@/lib/RunType/TypeOf';
 
 // Type for name is volontary sets to number, null and undefined, to avoid type error during test.
 type DummyType = {
@@ -46,7 +46,7 @@ describe('CollectionGuard / typeofGuard', () => {
       { id: 2, name: 2 },
     ];
 
-    expect(() => typeofGuard(dummyItems, 'name', 'string')).toThrowError();
+    expect(() => typeofGuard(dummyItems, 'name', TypeEnum.STRING)).toThrowError();
   });
 
   test('Executes without throwing an error', () => {
@@ -55,6 +55,6 @@ describe('CollectionGuard / typeofGuard', () => {
       { id: 2, name: 'Zachary', age: 30, birthday: new Date('1995-01-01') },
     ];
 
-    expect(() => typeofGuard(dummyItems, 'birthday', 'date')).not.toThrowError();
+    expect(() => typeofGuard(dummyItems, 'birthday', TypeEnum.DATE)).not.toThrowError();
   });
 });

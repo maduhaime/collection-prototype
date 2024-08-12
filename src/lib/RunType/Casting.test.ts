@@ -1,7 +1,6 @@
-// sum.test.js
 import { describe, expect, test } from 'vitest';
 
-import { isValidDate, isValidNumber } from './Casting';
+import { isValidDate, isValidNumber } from '@/lib/RunType/Casting';
 
 describe('isValidDate', () => {
   test('Identifies a Date', () => {

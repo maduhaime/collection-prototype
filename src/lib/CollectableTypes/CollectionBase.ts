@@ -1,4 +1,5 @@
-import { isValidDate, isValidNumber } from '../Casting';
+import { isValidDate, isValidNumber } from '@/lib/RunType/Casting';
+import { TypeEnum, TypeOf } from '@/lib/RunType/TypeOf';
 import {
   BooleanCompare,
   booleanFilter,
@@ -12,8 +13,6 @@ import {
 import { fieldGuard, typeofGuard, undefinedGuard } from './CollectionGuards';
 import { argsRegExp, chainSplitter, fnRegExp, SupportedArgs } from './CollectionScope';
 import { SortDirEnum, sortByDateField, sortByNumberField, sortByStringField, SortDirection, SortType, SortTypeEnum } from './CollectionSort';
-
-import { SuperEnum, superType } from '@/lib/types/SuperType';
 
 export class CollectionBase<T extends object> {
   [index: string]: unknown;
@@ -38,27 +37,27 @@ export class CollectionBase<T extends object> {
   }
 
   protected boolean_equals<K extends keyof ByType<T, Boolean>>(field: K, target: Boolean): this {
-    this._collection = booleanFilter(this._collection, field, target, BooleanCompare.EQUALS);
+    this._collection = booleanFilter(this._collection, field, BooleanCompare.EQUALS, target);
     return this;
   }
 
   protected number_equals<K extends keyof ByType<T, number>>(field: K, target: number): this {
-    this._collection = numberFilter(this._collection, field, target, NumberCompare.EQUALS);
+    this._collection = numberFilter(this._collection, field, NumberCompare.EQUALS, target);
     return this;
   }
 
   protected string_equals<K extends keyof ByType<T, string>>(field: K, target: string): this {
-    this._collection = stringFilter(this._collection, field, target, StringCompare.EQUALS);
+    this._collection = stringFilter(this._collection, field, StringCompare.EQUALS, target);
     return this;
   }
 
   protected string_includes<K extends keyof ByType<T, string>>(field: K, target: string): this {
-    this._collection = stringFilter(this._collection, field, target, StringCompare.INCLUDES);
+    this._collection = stringFilter(this._collection, field, StringCompare.INCLUDES, target);
     return this;
   }
 
   protected date_equals<K extends keyof ByType<T, Date>>(field: K, target: Date): this {
-    this._collection = dateFilter(this._collection, field, target, DateCompare.EQUALS);
+    this._collection = dateFilter(this._collection, field, DateCompare.EQUALS, target);
     return this;
   }
 
@@ -70,42 +69,28 @@ export class CollectionBase<T extends object> {
     return this;
   }
 
-  /**
-   * Finds all the items in the collection where the item[field] matches the target value.
-   *
-   * @param field - Item property (field) in the collection
-   * @param target - Value (target) of the item property in the collection
-   *
-   * @example
-   * ```ts
-   * const items: Person[] = [{firstname: 'Kevin'}, {firstname: 'Robert'}];
-   * const collection = new CollectionBase<Person>(items);
-   * collection.field_equals('firstname', 'Kevin')
-   * ```
-   * @return this
-   */
   field_equals<K extends keyof T>(field: K, target: T[K]): this {
     // TODO: Add a runtime error if field (K) not present in Object (T)... Edge Case birthday/date...
 
-    if (superType(target) === SuperEnum.STRING) {
+    if (TypeOf(target).is(TypeEnum.STRING)) {
       const f = field as keyof ByType<T, string>;
       const t = target as string;
       return this.string_equals(f, t);
     }
 
-    if (superType(target) === SuperEnum.NUMBER) {
+    if (TypeOf(target).is(TypeEnum.NUMBER)) {
       const f = field as keyof ByType<T, number>;
       const t = target as number;
       return this.number_equals(f, t);
     }
 
-    if (superType(target) === SuperEnum.BOOLEAN) {
+    if (TypeOf(target).is(TypeEnum.BOOLEAN)) {
       const f = field as keyof ByType<T, Boolean>;
       const t = target as Boolean;
       return this.boolean_equals(f, t);
     }
 
-    if (superType(target) === SuperEnum.DATE) {
+    if (TypeOf(target).is(TypeEnum.DATE)) {
       const f = field as keyof ByType<T, Date>;
       const t = target as Date;
       return this.date_equals(f, t);
@@ -115,12 +100,12 @@ export class CollectionBase<T extends object> {
   }
 
   protected is_truthy<K extends keyof ByType<T, Boolean>>(field: K): this {
-    this._collection = booleanFilter(this._collection, field, true, BooleanCompare.EQUALS);
+    this._collection = booleanFilter(this._collection, field, BooleanCompare.EQUALS, true);
     return this;
   }
 
   protected is_falsy<K extends keyof ByType<T, Boolean>>(field: K): this {
-    this._collection = booleanFilter(this._collection, field, false, BooleanCompare.EQUALS);
+    this._collection = booleanFilter(this._collection, field, BooleanCompare.EQUALS, false);
     return this;
   }
 
@@ -164,10 +149,6 @@ export class CollectionBase<T extends object> {
     this._collection = this._unscopped;
   }
 
-  // scope(_chain: string): this {
-  //   return this;
-  // }
-
   scope(chain: string): this {
     console.log('chain :', chain);
     const links: string[] = chain.split(chainSplitter).map((str: string) => str.trim());
@@ -176,9 +157,6 @@ export class CollectionBase<T extends object> {
       const fnCall = fnRegExp.exec(link);
       const fnName = fnCall?.groups?.fnName || link;
       const fnArgs = fnCall?.groups?.fnArgs || undefined;
-
-      // console.log(fnName, fnArgs);
-      // console.log(typeof this[fnName]);
 
       // Throws Error if the chain link is not a function
       if (typeof this[fnName as keyof this] !== 'function') throw new Error(`Function ${fnName} in chain is invalid`);
@@ -200,8 +178,6 @@ export class CollectionBase<T extends object> {
             return value;
           });
         }
-
-        // castedArgs.forEach((arg) => console.log(`${arg} is typeof ${typeof arg}`));
 
         fn.apply(this, castedArgs);
       }

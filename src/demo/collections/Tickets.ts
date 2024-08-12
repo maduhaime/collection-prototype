@@ -1,7 +1,9 @@
-import { CollectionBase } from '../lib/collection/CollectionBase';
-import type { Ticket, TicketType } from '../models/Ticket';
+import { CollectionBase } from '@/lib/CollectableTypes/CollectionBase';
+import type { Ticket, TicketType } from '@/demo/models/Ticket';
 
-export class TicketCollection extends CollectionBase<Ticket> {
+export class TicketCollection extends CollectionBase<Ticket> implements DynamicScope {
+  [index: string]: unknown;
+
   constructor(items: Ticket[]) {
     super(items);
   }
@@ -26,24 +28,19 @@ export class TicketCollection extends CollectionBase<Ticket> {
     return this.string_equals('name', name);
   }
 
-  // occur_between(start: Date, end: Date) {
-  //   // console.log('between', start, end);
-  //   this._collection = this._collection.filter((item: Ticket) => {
-  //     return start < item.date && item.date < end;
-  //   });
-  //   return this;
-  // }
-
   occurs_between(start: Date, end: Date) {
-    // console.log('occur_between :', start, end);
+    // console.log('occurs_between :', start, end);
     return this.between_dates('date', start, end);
   }
 
   without_department(): this {
+    // console.log('without_department');
     return this.is_null('department');
   }
 
-  without_business(): this {
+  without_company(): this {
+    // console.log('without_company');
+
     return this.is_undefined('company');
   }
 }

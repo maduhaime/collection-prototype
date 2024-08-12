@@ -2,6 +2,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { CollectionBase } from './CollectionBase';
+import { TypeEnum } from '../RunType/TypeOf';
 
 type DummyType = {
   id: number;
@@ -28,21 +29,21 @@ describe('CollectionScope', () => {
     expect(collection.count).toBe(2);
   });
 
-  test('Scopes items by field (string)', () => {
+  test('Scopes items by field (String)', () => {
     const collection = new CollectionBase(dummyItems);
     const expected = [dummyItems.at(0)];
 
     expect(collection.field_equals('name', 'Anthony').items).toStrictEqual(expected);
   });
 
-  test('Scopes items by field (number)', () => {
+  test('Scopes items by field (Number)', () => {
     const collection = new CollectionBase(dummyItems);
     const expected = [dummyItems.at(0)];
 
     expect(collection.field_equals('age', 20).items).toStrictEqual(expected);
   });
 
-  test('Scopes items by field (date)', () => {
+  test('Scopes items by field (Date)', () => {
     const date = new Date('1995-01-01');
     const collection = new CollectionBase(dummyItems);
     const expected = [dummyItems.at(1)];
@@ -53,22 +54,22 @@ describe('CollectionScope', () => {
   test('Sorts by string ASC and DESC', () => {
     const collection = new CollectionBase(dummyItems);
 
-    expect(collection.sort('name', 'asc', 'string').items).toStrictEqual(dummyItems);
-    expect(collection.sort('name', 'desc', 'string').items).toStrictEqual(dummyItems.reverse());
+    expect(collection.sort('name', 'asc', TypeEnum.STRING).items).toStrictEqual(dummyItems);
+    expect(collection.sort('name', 'desc', TypeEnum.STRING).items).toStrictEqual(dummyItems.reverse());
   });
 
   test('Sorts by number ASC and DESC', () => {
     const collection = new CollectionBase(dummyItems);
 
-    expect(collection.sort('age', 'asc', 'number').items).toStrictEqual(dummyItems);
-    expect(collection.sort('age', 'desc', 'number').items).toStrictEqual(dummyItems.reverse());
+    expect(collection.sort('age', 'asc', TypeEnum.NUMBER).items).toStrictEqual(dummyItems);
+    expect(collection.sort('age', 'desc', TypeEnum.NUMBER).items).toStrictEqual(dummyItems.reverse());
   });
 
   test('Sorts by date ASC and DESC', () => {
     const collection = new CollectionBase(dummyItems);
 
-    expect(collection.sort('birthday', 'asc', 'date').items).toStrictEqual(dummyItems.reverse());
-    expect(collection.sort('birthday', 'desc', 'date').items).toStrictEqual(dummyItems);
+    expect(collection.sort('birthday', 'asc', TypeEnum.DATE).items).toStrictEqual(dummyItems.reverse());
+    expect(collection.sort('birthday', 'desc', TypeEnum.DATE).items).toStrictEqual(dummyItems);
   });
 
   test('Resets the collection to its original value', () => {

@@ -1,7 +1,7 @@
 // sum.test.js
 import { describe, expect, test } from 'vitest';
 
-import { hasNull, sortByDateField, sortByNumberField, sortByStringField } from './CollectionSort';
+import { hasNull, hasUndefined, sortByDateField, sortByNumberField, sortByStringField, SortDirEnum, sortNull, sortUndefined } from './CollectionSort';
 
 type DummyType = {
   id: number;
@@ -24,7 +24,97 @@ describe('CollectionSort / hasNull', () => {
   });
 });
 
-describe('CollectionSort', () => {
+describe('CollectionSort / sortNull', () => {
+  test('Returns 0 when both field are null (ASC)', () => {
+    const result = sortNull(null, null, 'asc');
+
+    expect(result).toBe(0);
+  });
+
+  test('Returns 0 when both field are null (DESC)', () => {
+    const result = sortNull(null, null, 'desc');
+
+    expect(result).toBe(0);
+  });
+
+  test('Returns 1 when second param is null (ASC)', () => {
+    const result = sortNull('ABC', null, 'asc');
+
+    expect(result).toBe(1);
+  });
+
+  test('Returns -1 when first param is null (ASC)', () => {
+    const result = sortNull(null, 'ABC', 'asc');
+
+    expect(result).toBe(-1);
+  });
+
+  test('Returns 1 when first param is null (DESC)', () => {
+    const result = sortNull(null, 'ABC', 'desc');
+
+    expect(result).toBe(1);
+  });
+
+  test('Returns -1 when second param is null (DESC)', () => {
+    const result = sortNull('ABC', null, 'desc');
+
+    expect(result).toBe(-1);
+  });
+});
+
+describe('CollectionSort / hasUndefined', () => {
+  test('Returns true when at least one param is undefined', () => {
+    const result = hasUndefined('ABC', undefined);
+
+    expect(result).toBeTruthy();
+  });
+
+  test('Returns false when both params are not undefined', () => {
+    const result = hasUndefined('ABC', 'DEF');
+
+    expect(result).toBeFalsy();
+  });
+});
+
+describe('CollectionSort / sortUndefined', () => {
+  test('Returns 0 when both field are undefined (ASC)', () => {
+    const result = sortUndefined(undefined, undefined, 'asc');
+
+    expect(result).toBe(0);
+  });
+
+  test('Returns 0 when both field are undefined (DESC)', () => {
+    const result = sortUndefined(undefined, undefined, 'desc');
+
+    expect(result).toBe(0);
+  });
+
+  test('Returns 1 when second param in defined (ASC)', () => {
+    const result = sortUndefined('ABC', undefined, 'asc');
+
+    expect(result).toBe(1);
+  });
+
+  test('Returns -1 when first param in defined (ASC)', () => {
+    const result = sortUndefined(undefined, 'ABC', 'asc');
+
+    expect(result).toBe(-1);
+  });
+
+  test('Returns 1 when when second param in defined (DESC)', () => {
+    const result = sortUndefined(undefined, 'ABC', 'desc');
+
+    expect(result).toBe(1);
+  });
+
+  test('Returns -1 when first param in defined (DESC)', () => {
+    const result = sortUndefined('ABC', undefined, 'desc');
+
+    expect(result).toBe(-1);
+  });
+});
+
+describe('CollectionSort / sortByStringField', () => {
   test('Sorts by string field (ASC)', () => {
     const dummyItems: DummyType[] = [
       { id: 1, name: 'Anthony' },
@@ -76,7 +166,9 @@ describe('CollectionSort', () => {
     expect(result[1].id).toBe(1);
     expect(result[2].id).toBe(3);
   });
+});
 
+describe('CollectionSort / sortByNumberField', () => {
   test('Sorts by number field (ASC)', () => {
     const dummyItems: DummyType[] = [
       { id: 1, qty: 100 },
@@ -124,7 +216,9 @@ describe('CollectionSort', () => {
     expect(result[0].id).toBe(2);
     expect(result[2].id).toBe(3);
   });
+});
 
+describe('CollectionSort / sortByDateField', () => {
   test('Sorts by date field (ASC)', () => {
     const dummyItems: DummyType[] = [
       { id: 1, date: new Date('2000-01-01') },
