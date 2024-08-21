@@ -115,6 +115,7 @@ describe('CollectionFilters / dateFilter', () => {
   const dummyItems: DummyType[] = [
     { id: 1, date: new Date('2000-01-01') },
     { id: 2, date: new Date('2024-12-12') },
+    { id: 3, date: undefined },
   ];
 
   test('Filters where field equals target', () => {

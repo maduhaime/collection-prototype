@@ -61,9 +61,36 @@ export function stringFilter<T, K extends keyof ByType<T, string>>(collection: T
   });
 }
 
-export function dateFilter<T, K extends keyof ByType<T, Date>>(collection: T[], field: K, oper: DateCompare, target: Date): T[] {
+export function dateFilter<T extends Object, K extends keyof ByType<T, Date>>(collection: T[], field: K, oper: DateCompare, target: Date): T[] {
   return collection.filter((item: T) => {
     const source = item[field] as Date;
+
+    // Comparaison is not possible with undefined source
+    if (!source) return false;
+
+    // switch (oper) {
+    //   case DateCompare.EQUALS:
+    //     return source.getTime() === target.getTime();
+
+    //   case DateCompare.NOT_EQUALS:
+    //     return source.getTime() !== target.getTime();
+
+    //   case DateCompare.LESS_THAN:
+    //     return source.getTime() < target.getTime();
+
+    //   case DateCompare.LESS_THAN_OR_EQUALS:
+    //     return source.getTime() <= target.getTime();
+
+    //   case DateCompare.GREATER_THAN:
+    //     return source.getTime() > target.getTime();
+
+    //   case DateCompare.GREATER_THAN_OR_EQUALS:
+    //     return source.getTime() >= target.getTime();
+
+    //   default:
+    //     return false;
+    // }
+
     if (oper === DateCompare.EQUALS) return source.getTime() === target.getTime();
     if (oper === DateCompare.NOT_EQUALS) return source.getTime() !== target.getTime();
     if (oper === DateCompare.LESS_THAN) return source.getTime() < target.getTime();
